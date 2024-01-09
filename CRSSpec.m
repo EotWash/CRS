@@ -1,5 +1,6 @@
 %% Initial Parameters
-
+clear
+%%
 lamb = 1064e-9; % Wavelength of laser
 fg=0; % Gravitational frequency
 % f0 = 17.05e-3; % Resonant frequency
@@ -15,7 +16,7 @@ I=0.0941;%moment of inertia
 %% Data Handling
 
 % Data loading
-data = load('CRS_Data.dat');
+data = load('CRS_Data_24-01-05_2131.lvm');
 
 % Data to channels parsing
 tim = data(:,1);
@@ -28,15 +29,15 @@ PD32 = (data(:,7));
 Seis1 = (data(:,8));
 Seis2 = (data(:,9));
 Seis3 = (data(:,10));
-
+%%
 % Sampling frequency
 sampF=1/(tim(2)-tim(1));
- 
+ %%
 % Time sectioning 
-startTime=0*sampF+1;
-% startTime=3.75e4*sampF+1;
-endTime=length(tim);
-% endTime = 1e3*sampF;
+%startTime=0*sampF+1;
+startTime=500*sampF+1;
+%endTime=length(tim);
+endTime = 1.96E5*sampF;
 
 
 %% Calibration
@@ -53,9 +54,9 @@ PD32 = PD32(startTime:endTime);
 Seis1 = Seis1(startTime:endTime);
 Seis2 = Seis2(startTime:endTime);
 Seis3 = Seis3(startTime:endTime);
-
-% L = lamb/4/pi*unwrap(atan2((PD1-PD2),(PD1-PD3)));
-% L2 = lamb/4/pi*unwrap(atan2((PD12-PD22),(PD12-PD32)));
+%%
+ % L = lamb/4/pi*unwrap(atan2((PD1-PD2),(PD1-PD3)));
+ % L2 = lamb/4/pi*unwrap(atan2((PD12-PD22),(PD12-PD32)));
 
 [L,originalDistance,ellipseParam,signals] = ellipse_fit_single(PD1,PD2,PD3);
 [L2,originalDistance,ellipseParam,signals] = ellipse_fit_single(PD12,PD22,PD32);
@@ -181,6 +182,7 @@ set(l,'MarkerSize',16);
 ylim([1e-14 1e-6])
 xlim([1e-3 1e2])
 legend('HoQI 1','HoQI 2','mccs2','Interpreter', 'latex')
+title('DIST ASD')
 grid on
 
 % Time series of HoQI distances
@@ -192,6 +194,7 @@ set(l,'LineWidth',1.5);
 set(gca,'FontSize',16);
 set(l,'MarkerSize',16);
 % legend('HoQI 1','HoQI 2', 'Interpreter', 'latex')
+title('DIST readout')
 grid on
 
 % ASD of angle readout
@@ -205,6 +208,7 @@ set(l,'MarkerSize',16);
 ylim([6e-13 1e-6])
 xlim([5e-3 1e1])
 legend('Inertial Angle','Noise', 'Goal', 'GS13 Noise', 'T240 Noise','T360 Noise',  'Interpreter', 'latex')
+title('ANG readout')
 grid on
 
 % Time series of HoQI distances
@@ -215,6 +219,7 @@ ylabel('Angle (rad)','Interpreter', 'latex')
 set(l,'LineWidth',1.5);
 set(gca,'FontSize',16);
 set(l,'MarkerSize',16);
+title('ANG readout')
 % legend('HoQI 1','HoQI 2', 'Interpreter', 'latex')
 grid on
 % 
@@ -229,6 +234,7 @@ set(l,'MarkerSize',16);
 ylim([6e-13 1e-6])
 xlim([5e-3 1e1])
 legend('Inertial Angle','Readout Noise with sub','Readout Noise','Z','X',  'Interpreter', 'latex')
+title('ANG ASD')
 grid on
 
 % figure(5)
