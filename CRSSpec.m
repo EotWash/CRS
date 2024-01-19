@@ -16,7 +16,7 @@ I=0.0941;%moment of inertia
 %% Data Handling
 
 % Data loading
-data = load('CRS_Data_24-01-05_2131.lvm');
+data = load('CRS_Data_24-01-19_1121.lvm');
 
 % Data to channels parsing
 tim = data(:,1);
@@ -34,10 +34,10 @@ Seis3 = (data(:,10));
 sampF=1/(tim(2)-tim(1));
  %%
 % Time sectioning 
-%startTime=0*sampF+1;
-startTime=500*sampF+1;
-%endTime=length(tim);
-endTime = 1.96E5*sampF;
+startTime=0*sampF+1;
+%startTime=1.5E4*sampF+1;
+endTime=length(tim);
+%endTime = 4*10^4*sampF;
 
 
 %% Calibration
@@ -55,13 +55,16 @@ Seis1 = Seis1(startTime:endTime);
 Seis2 = Seis2(startTime:endTime);
 Seis3 = Seis3(startTime:endTime);
 %%
- % L = lamb/4/pi*unwrap(atan2((PD1-PD2),(PD1-PD3)));
- % L2 = lamb/4/pi*unwrap(atan2((PD12-PD22),(PD12-PD32)));
+  % L = lamb/4/pi*unwrap(atan2((PD1-PD2),(PD1-PD3)));
+  % L2 = lamb/4/pi*unwrap(atan2((PD12-PD22),(PD12-PD32)));
+  
+Lnw = lamb/4/pi*unwrap(atan2((PD1-PD2),(PD1-PD3)));
+Lnw2 = lamb/4/pi*unwrap(atan2((PD12-PD22),(PD12-PD32)));
 
 [L,originalDistance,ellipseParam,signals] = ellipse_fit_single(PD1,PD2,PD3);
 [L2,originalDistance,ellipseParam,signals] = ellipse_fit_single(PD12,PD22,PD32);
 
-L2 = -L2;
+%L2 = -L2;
 
 % Angle and sum calculation
 ang = (L-L2)/(2*R);
