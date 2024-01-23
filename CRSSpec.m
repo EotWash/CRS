@@ -1,10 +1,10 @@
 %% Initial Parameters
-clear
+% clear
 %%
 lamb = 1064e-9; % Wavelength of laser
 fg=0; % Gravitational frequency
 % f0 = 17.05e-3; % Resonant frequency
-f0 = 17.8e-3; % Resonant frequency
+f0 = 29.7e-3; % Resonant frequency
 % f0 = 19.4e-3;
 g=9.81; % Gravitational acceleration
 Q=294; % Quality Factor
@@ -16,7 +16,7 @@ I=0.0941;%moment of inertia
 %% Data Handling
 
 % Data loading
-data = load('CRS_Data_24-01-19_1121.lvm');
+ %data = load('CRS_Data_24-01-19_1905.lvm');
 
 % Data to channels parsing
 tim = data(:,1);
@@ -35,11 +35,15 @@ sampF=1/(tim(2)-tim(1));
  %%
 % Time sectioning 
 startTime=0*sampF+1;
-%startTime=1.5E4*sampF+1;
-endTime=length(tim);
-%endTime = 4*10^4*sampF;
+% startTime=1000*sampF+1;
+ startTime=2e4*sampF+1;
+%endTime=length(tim);
+% endTime = 5000*sampF;
+endTime = 6e4*sampF;
 
 
+%startTime=0*sampF+1;
+%endTime=length(tim);
 %% Calibration
 
 tim = tim(startTime:endTime);
@@ -55,16 +59,16 @@ Seis1 = Seis1(startTime:endTime);
 Seis2 = Seis2(startTime:endTime);
 Seis3 = Seis3(startTime:endTime);
 %%
-  % L = lamb/4/pi*unwrap(atan2((PD1-PD2),(PD1-PD3)));
-  % L2 = lamb/4/pi*unwrap(atan2((PD12-PD22),(PD12-PD32)));
-  
-Lnw = lamb/4/pi*unwrap(atan2((PD1-PD2),(PD1-PD3)));
-Lnw2 = lamb/4/pi*unwrap(atan2((PD12-PD22),(PD12-PD32)));
+   % L = lamb/4/pi*unwrap(atan2((PD1-PD2),(PD1-PD3)));
+   % L2 = lamb/4/pi*unwrap(atan2((PD12-PD22),(PD12-PD32)));
+% 
+% Lnw = lamb/4/pi*unwrap(atan2((PD1-PD2),(PD1-PD3)));
+% Lnw2 = lamb/4/pi*unwrap(atan2((PD12-PD22),(PD12-PD32)));
 
-[L,originalDistance,ellipseParam,signals] = ellipse_fit_single(PD1,PD2,PD3);
-[L2,originalDistance,ellipseParam,signals] = ellipse_fit_single(PD12,PD22,PD32);
+ [L,originalDistance,ellipseParam,signals] = ellipse_fit_single(PD3,PD2,PD1);
+ [L2,originalDistance,ellipseParam,signals] = ellipse_fit_single(PD12,PD22,PD32);
 
-%L2 = -L2;
+ L2 = -L2;
 
 % Angle and sum calculation
 ang = (L-L2)/(2*R);
@@ -76,13 +80,13 @@ CRSInvertFilt = 1*CRSInvertFilt/abs(freqresp(CRSInvertFilt,2*pi*100));
 
 % Applying filter
 angfilt = lsim(CRSInvertFilt, ang, tim);
-angfilt = angfilt(1e1*sampF:end);
-timfilt = tim(1e1*sampF:end);
+angfilt = angfilt(1e1*sampF:end); %1e1
+timfilt = tim(1e1*sampF:end); %1e1
 
-[b,a] = butter(2,2*1e-1/sampF, 'high');
+[b,a] = butter(2,.2*1e-1/sampF, 'high'); %2e-1
 angPlot = filter(b,a,angfilt);
-timPlot = timfilt(1.5e1*sampF:end);
-angPlot = angPlot(1.5e1*sampF:end);
+timPlot = timfilt(1.5e1*sampF:end); %1.5e1
+angPlot = angPlot(1.5e1*sampF:end); %1.5e1
 
 %% ASD Calculations
 
@@ -202,7 +206,7 @@ grid on
 
 % ASD of angle readout
 figure(3)
-l=loglog( FA,AAF, F2,sqrt(noise.^2+damping.^2), F2, noiseModel, F, GS13Noise,'--', F, T240Noise,'--', F, T360Noise,'--');
+l=loglog( FA,AAF, F2,sqrt(noise.^2), F2, noiseModel, F, GS13Noise,'--', F, T240Noise,'--', F, T360Noise,'--');
 xlabel('Frequency (Hz)','Interpreter', 'latex')
 ylabel('ASD (rad/$\sqrt{Hz}$)','Interpreter', 'latex')
 set(l,'LineWidth',1.5);
